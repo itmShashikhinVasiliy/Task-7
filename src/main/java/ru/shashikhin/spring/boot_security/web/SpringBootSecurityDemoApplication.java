@@ -1,4 +1,4 @@
-package ru.itmentor.spring.boot_security.demo;
+package ru.shashikhin.spring.boot_security.web;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User info</title>
+</head>
+<body>
+<p th:text="${user.getId()}"></p>
+<p th:text="${user.getUsername()}"></p>
+<p th:text="${user.getEmail()}"></p>
+<p th:text="${user.getAge()}"></p>
+<form th:method="GET"
+      th:action="@{/admin/{id}/edit(id=${user.getId()})}">
+    <input type="submit" value="Edit">
+</form>
+<form th:method="DELETE"
+      th:action="@{/admin/{id}(id=${user.getId()})}">
+    <input type="submit" value="Delete">
+</form>
+<div th:insert="logoutFooter :: footer"></div>
+</body>
+</html>
