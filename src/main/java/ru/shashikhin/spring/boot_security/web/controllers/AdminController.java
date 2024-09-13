@@ -65,9 +65,8 @@ public class AdminController {
 
     @PatchMapping("/{id}")
     public String update(@ModelAttribute("user") @Valid User user,
-                         @PathVariable("id") Long id,
-                         BindingResult bindingResult) {
-        userValidator.validate(user, bindingResult);
+                         BindingResult bindingResult,
+                         @PathVariable("id") Long id ) {
         if (bindingResult.hasErrors()) {
             return "admin/edit";
         }

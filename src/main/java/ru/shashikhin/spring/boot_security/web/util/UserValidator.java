@@ -25,8 +25,7 @@ public class UserValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         User user = (User) target;
-        if (userService.findByUsername(user.getUsername()) != null
-            && !Thread.currentThread().getStackTrace()[2].getMethodName().equals("update")) {
+        if (userService.findByUsername(user.getUsername()) != null) {
             errors.rejectValue("username", "", "This user already exist");
         }
     }

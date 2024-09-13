@@ -1,6 +1,5 @@
 package ru.shashikhin.spring.boot_security.web.services;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -60,11 +59,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user != null) {
-            Hibernate.initialize(user.getRoles());
-        }
-        return user;
-
+        return userRepository.findByUsername(username);
     }
 }
