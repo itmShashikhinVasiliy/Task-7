@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.shashikhin.spring.boot_security.web.dto.UserDTO;
+import ru.shashikhin.spring.boot_security.web.exceptions.user_exceptions.UserNotFoundException;
 import ru.shashikhin.spring.boot_security.web.models.User;
 import ru.shashikhin.spring.boot_security.web.repositories.UserRepository;
 
@@ -63,11 +64,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findDTOById(Long id) {
-        return modelMapper.map(findById(id), UserDTO.class);
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        return modelMapper.map(user, UserDTO.class);
     }
 
     @Override
+    @Transactional
     public void updateDTO(Long id, UserDTO userDTO) {
+        if (userRepository.findById(id).isEmpty()) {
+            throw new UserNotFoundException();
+        }
         User user = modelMapper.map(userDTO, User.class);
         user.setId(id);
         update(user);
@@ -75,6 +81,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUsernameAndFetchLazyRelationEagerly(username);
     }
 }

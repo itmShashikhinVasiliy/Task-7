@@ -8,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import ru.shashikhin.spring.boot_security.web.exceptions.user_exceptions.UserNotCreatedException;
 import ru.shashikhin.spring.boot_security.web.models.User;
 import ru.shashikhin.spring.boot_security.web.services.RegistrationService;
 import ru.shashikhin.spring.boot_security.web.util.UserValidator;
@@ -29,7 +30,7 @@ public class AuthController {
                                                    BindingResult bindingResult) {
         userValidator.validate(user, bindingResult);
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new UserNotCreatedException();
         }
         registrationService.register(user);
         return ResponseEntity.ok(HttpStatus.CREATED);

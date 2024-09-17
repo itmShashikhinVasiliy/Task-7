@@ -25,9 +25,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     @Transactional
     public void register(User user) {
-        if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            user.setRoles(Collections.singleton(roleService.findByName("ROLE_USER")));
-        }
+        user.setRoles(Collections.singleton(roleService.findByName("ROLE_USER")));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.save(user);
     }

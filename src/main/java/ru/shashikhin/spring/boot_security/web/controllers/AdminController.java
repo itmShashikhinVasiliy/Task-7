@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.shashikhin.spring.boot_security.web.dto.UserDTO;
+import ru.shashikhin.spring.boot_security.web.exceptions.user_exceptions.UserNotCreatedException;
+import ru.shashikhin.spring.boot_security.web.exceptions.user_exceptions.UserNotFoundException;
+import ru.shashikhin.spring.boot_security.web.exceptions.user_exceptions.UserNotUpdatedException;
 import ru.shashikhin.spring.boot_security.web.models.User;
 import ru.shashikhin.spring.boot_security.web.services.RegistrationService;
 import ru.shashikhin.spring.boot_security.web.services.UserService;
@@ -39,7 +42,7 @@ public class AdminController {
                                              BindingResult bindingResult) {
         userValidator.validate(user, bindingResult);
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new UserNotCreatedException();
         }
 
         registrationService.register(user);
@@ -48,7 +51,11 @@ public class AdminController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> show(@PathVariable("id") Long id) {
-        return ResponseEntity.ok().body(userService.findDTOById(id));
+        UserDTO user = userService.findDTOById(id);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return ResponseEntity.ok().body(user);
     }
 
     @PatchMapping("/{id}")
@@ -56,7 +63,7 @@ public class AdminController {
                          BindingResult bindingResult,
                          @PathVariable("id") Long id) {
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new UserNotUpdatedException();
         }
         userService.updateDTO(id, user);
         return ResponseEntity.ok().body(user);
