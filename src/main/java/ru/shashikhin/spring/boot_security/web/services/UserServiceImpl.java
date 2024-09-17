@@ -1,11 +1,14 @@
 package ru.shashikhin.spring.boot_security.web.services;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.shashikhin.spring.boot_security.web.dto.UserDTO;
+import ru.shashikhin.spring.boot_security.web.exceptions.user_exceptions.UserNotFoundException;
 import ru.shashikhin.spring.boot_security.web.models.User;
 import ru.shashikhin.spring.boot_security.web.repositories.UserRepository;
 
@@ -17,11 +20,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -47,8 +52,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void update(Long id, User user) {
-        user.setId(id);
+    public void update(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
@@ -57,6 +61,23 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void delete(Long id) {
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public UserDTO findDTOById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        return modelMapper.map(user, UserDTO.class);
+    }
+
+    @Override
+    @Transactional
+    public void updateDTO(Long id, UserDTO userDTO) {
+        if (userRepository.findById(id).isEmpty()) {
+            throw new UserNotFoundException();
+        }
+        User user = modelMapper.map(userDTO, User.class);
+        user.setId(id);
+        update(user);
     }
 
     @Override
